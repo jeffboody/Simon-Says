@@ -70,6 +70,30 @@ ISR (SIG_OVERFLOW2)
   TCNT2 = 131; 		//256 - 125 = 131
 }
 
+// Report game state
+// Serial is used by default but other modes could also
+// be added easily. For instance an exteral display can
+// be added via SPI or I2C. You can easily disable the
+// LED or BUTTON messages by selecting the appropriate
+// define.
+// LED messages should start with '*' followed by the
+// set of RGBY characters that are lit (others are
+// assumed to be off).
+// BUTTON messages should start with '#' and similarly
+// followed by the RGBY characters that are pressed.
+#define SIMON_SAYS_SERIAL
+#ifdef SIMON_SAYS_SERIAL
+#define SIMON_SAYS_BEGIN(m)  Serial.begin(m)
+#define SIMON_SAYS_LED(m)    Serial.println(m)
+#define SIMON_SAYS_BUTTON(m) Serial.println(m)
+#define SIMON_SAYS(m)        Serial.println(m)
+#else
+#define SIMON_SAYS_BEGIN(m)
+#define SIMON_SAYS_LED(m)
+#define SIMON_SAYS_BUTTON(m)
+#define SIMON_SAYS(m)
+#endif
+
 //General short delays, using internal timer do a fairly accurate 1us
 #ifdef CHIP_ATMEGA168
 void delay_us(uint16_t delay)
@@ -87,29 +111,50 @@ void delay_ms(uint16_t x)
 //Light the given set of LEDs
 void set_leds(uint8_t leds)
 {
+  char buffer[6]; // "*RGBY\0"
+  int idx = 0;
+  uint8_t leds_lit = 0;
+  static uint8_t last_leds_lit = 0;
+
+  buffer[idx++] = '*';
   if ((leds & LED_RED) != 0) {
+    buffer[idx++] = 'R';
+    leds_lit |= LED_RED;
     sbi(LED_RED_PORT, LED_RED_PIN);
-  } 
+  }
   else {
     cbi(LED_RED_PORT, LED_RED_PIN);
   }
   if ((leds & LED_GREEN) != 0) {
+    buffer[idx++] = 'G';
+    leds_lit |= LED_GREEN;
     sbi(LED_GREEN_PORT, LED_GREEN_PIN);
-  } 
+  }
   else {
     cbi(LED_GREEN_PORT, LED_GREEN_PIN);
   }
   if ((leds & LED_BLUE) != 0) {
+    buffer[idx++] = 'B';
+    leds_lit |= LED_BLUE;
     sbi(LED_BLUE_PORT, LED_BLUE_PIN);
-  } 
+  }
   else {
     cbi(LED_BLUE_PORT, LED_BLUE_PIN);
   }
   if ((leds & LED_YELLOW) != 0) {
+    buffer[idx++] = 'Y';
+    leds_lit |= LED_YELLOW;
     sbi(LED_YELLOW_PORT, LED_YELLOW_PIN);
-  } 
+  }
   else {
     cbi(LED_YELLOW_PORT, LED_YELLOW_PIN);
+  }
+
+  if(leds_lit != last_leds_lit)
+  {
+    buffer[idx] = '\0';
+    SIMON_SAYS_LED(buffer);
+    last_leds_lit = leds_lit;
   }
 }
 
@@ -161,16 +206,39 @@ void ioinit(void)
 // Returns a '1' bit in the position corresponding to LED_RED, etc.
 uint8_t check_button(void)
 {
+  char buffer[6]; // "#RGBY\0"
+  int idx = 0;
   uint8_t button_pressed = 0;
+  static uint8_t last_button_pressed = 0;
 
+  buffer[idx++] = '#';
   if ((BUTTON_RED_PORT & (1 << BUTTON_RED_PIN)) == 0)
+  {
+    buffer[idx++] = 'R';
     button_pressed |= LED_RED; 
+  }
   if ((BUTTON_GREEN_PORT & (1 << BUTTON_GREEN_PIN)) == 0)
+  {
+    buffer[idx++] = 'G';
     button_pressed |= LED_GREEN; 
+  }
   if ((BUTTON_BLUE_PORT & (1 << BUTTON_BLUE_PIN)) == 0)
+  {
+    buffer[idx++] = 'B';
     button_pressed |= LED_BLUE; 
+  }
   if ((BUTTON_YELLOW_PORT & (1 << BUTTON_YELLOW_PIN)) == 0)
+  {
+    buffer[idx++] = 'Y';
     button_pressed |= LED_YELLOW; 
+  }
+
+  if(button_pressed != last_button_pressed)
+  {
+    buffer[idx] = '\0';
+    SIMON_SAYS_BUTTON(buffer);
+    last_button_pressed = button_pressed;
+  }
 
   return button_pressed;
 }
@@ -315,6 +383,9 @@ void toner(uint8_t which, uint16_t buzz_length_ms)
 // Show an "attract mode" display while waiting for user to press button.
 void attract_mode(void)
 {
+  int prompt = 1;
+  unsigned long t0 = millis();
+
   while (1) {
     set_leds(LED_RED);
     delay_ms(100);
@@ -335,6 +406,19 @@ void attract_mode(void)
     delay_ms(100);
     if (check_button() != 0x00) 
       return;
+
+    if(prompt) {
+      unsigned int t1 = millis();
+      if((t1 - t0) >= 1000) {
+        prompt = 0;
+        if (battle) {
+          SIMON_SAYS("Battle Mode");
+        }
+        else {
+          SIMON_SAYS("Let's Play");
+        }
+      }
+    }
   }
 }
 
@@ -386,10 +470,14 @@ int game_mode(void)
     uint8_t move;
 
     // Add a button to the current moves, then play them back
-    if(battle) 
+    if(battle) {
+      SIMON_SAYS("Challanger make your move");
       add_to_moves_battle(); // If in battle mode, then listen for user input to choose the next step
-    else 
+    }
+    else {
+      SIMON_SAYS("Simon Says");
       add_to_moves(); 
+    }
 
     if(battle) 
       ; // If in battle mode, then don't play back the pattern, it's up the the users to remember it - then add on a move.
@@ -401,18 +489,22 @@ int game_mode(void)
       uint8_t choice = wait_for_button();
 
       // If wait timed out, player loses.
-      if (choice == 0)
+      if (choice == 0) {
+        SIMON_SAYS("Are you even trying?");
         return 0;
+      }
 
       toner(choice, 150); 
 
       // If the choice is incorect, player loses.
       if (choice != moves[move]) {
+        SIMON_SAYS("You have choosen poorly");
         return 0;
       }
     }
 
     // Player was correct, delay before playing moves
+    SIMON_SAYS("You have choosen wisely");
     if(battle)
     {
       //reduced wait time, because we want to allow the battle to go very fast! 
@@ -424,12 +516,14 @@ int game_mode(void)
   }
 
   // Player wins!
+  SIMON_SAYS("You are the champion!");
   return 1;
 }
 
 void setup()
 {
-
+  // change baud rate to match Serial device
+  SIMON_SAYS_BEGIN(57600);
 }
 
 void loop()
@@ -437,6 +531,8 @@ void loop()
 
   // Setup IO pins and defaults
   ioinit(); 
+
+  SIMON_SAYS("Welcome to Simon Says");
 
   // Check to see if LOWER LEFT BUTTON is pressed
   if (check_button() == LED_YELLOW){
@@ -470,6 +566,7 @@ void loop()
     attract_mode();
 
     // Indicate the start of game play
+    SIMON_SAYS("Prepare yourself");
     set_leds(LED_RED|LED_GREEN|LED_BLUE|LED_YELLOW);
     delay_ms(1000);
     set_leds(0);
