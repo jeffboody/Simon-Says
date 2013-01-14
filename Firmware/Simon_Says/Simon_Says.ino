@@ -83,12 +83,47 @@ ISR (SIG_OVERFLOW2)
 // followed by the RGBY characters that are pressed.
 #define SIMON_SAYS_SERIAL
 #ifdef SIMON_SAYS_SERIAL
+
+// Serial uses power so don't transmit unless somebody
+// is listening.
+uint8_t serial = 0;
+
+uint8_t serial_connect(void)
+{
+  uint8_t connect = 0;
+  while(Serial.available()) {
+    int s = Serial.read();
+    if(s == 'c') {
+      serial = 1;
+      connect = 1;
+    }
+    else if(s == 'd') {
+      // disconnect
+      serial = 0;
+    }
+  }
+  return connect;
+}
+
+void serial_print(const char* msg)
+{
+  if(serial) {
+    Serial.println(msg);
+  }
+}
+
 #define SIMON_SAYS_BEGIN(m)  Serial.begin(m)
-#define SIMON_SAYS_LED(m)    Serial.println(m)
-#define SIMON_SAYS_BUTTON(m) Serial.println(m)
-#define SIMON_SAYS(m)        Serial.println(m)
+#define SIMON_SAYS_CONNECT() serial_connect()
+#define SIMON_SAYS_LED(m)    serial_print(m)
+#define SIMON_SAYS_BUTTON(m) serial_print(m)
+#define SIMON_SAYS(m)        serial_print(m)
 #else
+uint8_t serial_connect(void)
+{
+  return 0;
+}
 #define SIMON_SAYS_BEGIN(m)
+#define SIMON_SAYS_CONNECT() serial_connect()
 #define SIMON_SAYS_LED(m)
 #define SIMON_SAYS_BUTTON(m)
 #define SIMON_SAYS(m)
@@ -386,31 +421,34 @@ void toner(uint8_t which, uint16_t buzz_length_ms)
 }
 
 // Show an "attract mode" display while waiting for user to press button.
-void attract_mode(void)
+uint8_t attract_mode(void)
 {
   int prompt = 1;
   unsigned long t0 = millis();
 
   while (1) {
+    if (SIMON_SAYS_CONNECT())
+      return 1;
+
     set_leds(LED_RED);
     delay_ms(100);
     if (check_button() != 0x00)
-      return;
+      return SIMON_SAYS_CONNECT();
 
     set_leds(LED_BLUE);
     delay_ms(100);
     if (check_button() != 0x00) 
-      return;
+      return SIMON_SAYS_CONNECT();
 
     set_leds(LED_GREEN);
     delay_ms(100);
     if (check_button() != 0x00) 
-      return;
+      return SIMON_SAYS_CONNECT();
 
     set_leds(LED_YELLOW);
     delay_ms(100);
     if (check_button() != 0x00) 
-      return;
+      return SIMON_SAYS_CONNECT();
 
     if(prompt) {
       unsigned int t1 = millis();
@@ -570,7 +608,10 @@ void loop()
   // Main loop
   while (1) {
     // Wait for user to start game
-    attract_mode();
+    if(attract_mode()) {
+      // restart the game when a new connection is made
+      break;
+    }
 
     // Indicate the start of game play
     SIMON_SAYS("Prepare yourself");
