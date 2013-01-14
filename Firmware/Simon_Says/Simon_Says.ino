@@ -105,6 +105,11 @@ void delay_us(uint16_t delay)
 //General short delays
 void delay_ms(uint16_t x)
 {
+  while(x > 10) {
+    check_button();
+    delay(10);
+    x -= 10;
+  }
   delay(x);
 }
 
@@ -491,6 +496,7 @@ int game_mode(void)
       // If wait timed out, player loses.
       if (choice == 0) {
         SIMON_SAYS("Are you even trying?");
+        delay_ms(100); // wait for button release
         return 0;
       }
 
@@ -499,6 +505,7 @@ int game_mode(void)
       // If the choice is incorect, player loses.
       if (choice != moves[move]) {
         SIMON_SAYS("You have choosen poorly");
+        delay_ms(100); // wait for button release
         return 0;
       }
     }
