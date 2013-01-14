@@ -74,31 +74,14 @@ ISR (SIG_OVERFLOW2)
 #ifdef CHIP_ATMEGA168
 void delay_us(uint16_t delay)
 {
-  while (delay > 256)
-  {
-    TIFR0 = (1<<TOV0); // Clear any interrupt flags on Timer0
-    TCNT0 = 0; 
-    while ( (TIFR0 & (1<<TOV0)) == 0);
-
-    delay -= 256;
-  }
-
-  TIFR0 = (1<<TOV0); 	// Clear any interrupt flags on Timer0
-
-    // 256 - 125 = 131 : Preload timer 0 for x clicks. Should be 1us per click
-  TCNT0 = 256 - delay; 
-  while ((TIFR0 & (1<<TOV0)) == 0) {
-    // Do nothing
-  }
+  delayMicroseconds(delay);
 }
 #endif
 
 //General short delays
 void delay_ms(uint16_t x)
 {
-  while (x-- > 0) {
-    delay_us(1000);
-  }
+  delay(x);
 }
 
 //Light the given set of LEDs
@@ -173,22 +156,6 @@ void init_gpio(void)
 void ioinit(void)
 {
   init_gpio();	
-
-  //Set Timer 0 Registers to Default Setting to over-ride the timer initialization made in the init() function of the \
-  //Arduino Wiring library (Wiring.c in the hardware/core/arduino folder)
-  TCCR0A = 0;
-  TIMSK0 = 0;
-  // Init timer 0 for delay_us timing (1,000,000 / 1 = 1,000,000)
-  //TCCR0B = (1<<CS00); // Set Prescaler to 1. CS00=1
-  TCCR0B = (1<<CS01); // Set Prescaler to 1. CS00=1
-
-    // Init timer 2
-  ASSR = 0;
-  // Set Prescaler to 1024. CS22=1, CS21=1, CS20=1
-  TCCR2B = (1<<CS22)|(1<<CS21)|(1<<CS20); 
-  TIMSK2 = (1<<TOIE2); // Enable Timer 2 Interrupt
-
-  cli();  //We don't use any interrupt functionality. Let's turn it off so Arduino doesn't screw around with it!
 }
 
 // Returns a '1' bit in the position corresponding to LED_RED, etc.
