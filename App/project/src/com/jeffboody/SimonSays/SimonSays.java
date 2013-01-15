@@ -29,16 +29,39 @@ import android.os.Bundle;
 import android.view.Window;
 import android.view.WindowManager;
 import android.content.Intent;
+import java.lang.String;
+import android.os.Looper;
 import com.jeffboody.a3d.A3DSurfaceView;
 import com.jeffboody.a3d.A3DNativeRenderer;
 import com.jeffboody.a3d.A3DResource;
+import android.bluetooth.BluetoothAdapter;
+import android.bluetooth.BluetoothDevice;
+import com.jeffboody.BlueSmirf.BlueSmirfSPP;
 
-public class SimonSays extends Activity
+public class SimonSays extends Activity implements Runnable
 {
 	private static final String TAG = "SimonSays";
 
 	private A3DNativeRenderer Renderer;
 	private A3DSurfaceView    Surface;
+
+	// Bluetooth
+	private boolean      mIsRunning        = false;
+	private BlueSmirfSPP mSPP              = new BlueSmirfSPP();
+	private String       mBluetoothAddress = "00:06:66:05:03:A8";
+
+	// Parser state
+	private static final int PARSER_BEGIN     = 0;
+	private static final int PARSER_LED       = 1;
+	private static final int PARSER_BUTTON    = 2;
+	private static final int PARSER_MESSAGE   = 3;
+	private static final int PARSER_MAX_COUNT = 32;
+	private int mParserState = PARSER_BEGIN;
+
+	// Native interface
+	private native void NativeLed(int r, int g, int b, int y);
+	private native void NativeButton(int r, int g, int b, int y);
+	private native void NativeMessage(String message);
 
 	@Override
 	public void onCreate(Bundle savedInstanceState)
@@ -63,11 +86,20 @@ public class SimonSays extends Activity
 	{
 		super.onResume();
 		Surface.ResumeRenderer();
+
+		// start Bluetooth thread
+		Thread t = new Thread(this);
+		t.start();
+
+		mIsRunning = true;
 	}
 
 	@Override
 	protected void onPause()
 	{
+		mIsRunning = false;
+		mSPP.writeByte('d');
+		mSPP.disconnect();
 		Surface.PauseRenderer();
 		super.onPause();
 	}
@@ -79,6 +111,122 @@ public class SimonSays extends Activity
 		Surface = null;
 		Renderer = null;
 		super.onDestroy();
+	}
+
+	/*
+	 * main loop
+	 */
+
+	public void run()
+	{
+		int r          = 0;
+		int b          = 0;
+		int g          = 0;
+		int y          = 0;
+		int count      = 0;
+		byte[] message = new byte[PARSER_MAX_COUNT];
+
+		Looper.prepare();
+
+		while(mIsRunning)
+		{
+			NativeMessage("Connecting");
+			mSPP.connect(mBluetoothAddress);
+			mSPP.writeByte('c');
+			while(mSPP.isConnected())
+			{
+				if(mSPP.isError())
+				{
+					mSPP.disconnect();
+					break;
+				}
+
+				byte c = (byte) mSPP.readByte();
+
+				if(c == '\r')
+				{
+					// ignore '\r'
+					continue;
+				}
+				else if(c == '\n')
+				{
+					// end of command / message
+
+					if(mParserState == PARSER_LED)
+					{
+						NativeLed(r, g, b, y);
+					}
+					else if(mParserState == PARSER_BUTTON)
+					{
+						NativeButton(r, g, b, y);
+					}
+					else if(mParserState == PARSER_MESSAGE)
+					{
+						NativeMessage(new String(message, 0, count));
+					}
+					mParserState = PARSER_BEGIN;
+				}
+				else if(mParserState == PARSER_BEGIN)
+				{
+					// initialize state
+					r     = 0;
+					g     = 0;
+					b     = 0;
+					y     = 0;
+					count = 0;
+
+					// check command type
+					if(c == '*')
+					{
+						mParserState = PARSER_LED;
+					}
+					else if(c == '#')
+					{
+						mParserState = PARSER_BUTTON;
+					}
+					else
+					{
+						mParserState = PARSER_MESSAGE;
+					}
+				}
+				else if((mParserState == PARSER_LED) ||
+				        (mParserState == PARSER_BUTTON))
+				{
+					// led lit or button pressed
+
+					if(c == 'R')
+					{
+						r = 1;
+					}
+					else if(c == 'G')
+					{
+						g = 1;
+					}
+					else if(c == 'B')
+					{
+						b = 1;
+					}
+					else if(c == 'Y')
+					{
+						y = 1;
+					}
+				}
+
+				// always process messages in case we drop
+				// through from PARSER_BEGIN
+				if((mParserState == PARSER_MESSAGE) &&
+				   (count < PARSER_MAX_COUNT))
+				{
+					message[count++] = c;
+				}
+			}
+			if(mIsRunning)
+			{
+				NativeMessage("Disconnected");
+				try { Thread.sleep(1000); }
+				catch(InterruptedException e) { }
+			}
+		}
 	}
 
 	static

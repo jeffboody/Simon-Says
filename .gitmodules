@@ -7,3 +7,6 @@
 [submodule "App/fonts"]
 	path = App/fonts
 	url = git@github.com:jeffboody/a3d-fonts.git
+[submodule "App/project/src/com/jeffboody/BlueSmirf"]
+	path = App/project/src/com/jeffboody/BlueSmirf
+	url = git@github.com:jeffboody/bluesmirf.git

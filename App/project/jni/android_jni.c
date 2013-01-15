@@ -26,7 +26,7 @@
 #include <stdlib.h>
 #include <assert.h>
 
-#include "a3d/a3d_GL.h"
+#include "simon_says.h"
 
 #define LOG_TAG "SimonSays"
 #include "a3d/a3d_log.h"
@@ -34,65 +34,6 @@
 /***********************************************************
 * private                                                  *
 ***********************************************************/
-
-typedef struct
-{
-	GLsizei w;
-	GLsizei h;
-} simon_says_t;
-
-simon_says_t* simon_says_new(const char* font)
-{
-	LOGD("debug");
-
-	LOGI("GL vendor     : %s", glGetString(GL_VENDOR));
-	LOGI("GL renderer   : %s", glGetString(GL_RENDERER));
-	LOGI("GL version    : %s", glGetString(GL_VERSION));
-	LOGI("GL extensions : %s", glGetString(GL_EXTENSIONS));
-
-	simon_says_t* self = (simon_says_t*) malloc(sizeof(simon_says_t));
-	if(self == NULL)
-	{
-		LOGE("malloc failed");
-		return NULL;
-	}
-
-	self->w = 0;
-	self->h = 0;
-	return self;
-}
-
-void simon_says_delete(simon_says_t** _self)
-{
-	// *_self can be null
-	assert(_self);
-
-	simon_says_t* self = *_self;
-	if(self)
-	{
-		LOGD("debug");
-		free(self);
-		*_self = NULL;
-	}
-}
-
-void simon_says_resize(simon_says_t* self, int w, int h)
-{
-	assert(self);
-	LOGI("%ix%i", w, h);
-
-	self->w = w;
-	self->h = h;
-	glViewport(0, 0, w, h);
-}
-
-void simon_says_draw(simon_says_t* self)
-{
-	assert(self);
-	LOGD("debug");
-
-	glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
-}
 
 static simon_says_t* simon_says = NULL;
 
@@ -161,4 +102,40 @@ JNIEXPORT int JNICALL Java_com_jeffboody_a3d_A3DNativeRenderer_NativeClientVersi
 	assert(env);
 	LOGD("debug");
 	return 1;
+}
+
+JNIEXPORT void JNICALL Java_com_jeffboody_SimonSays_SimonSays_NativeLed(JNIEnv* env, jobject obj, jint r, jint g, jint b, jint y)
+{
+	assert(env);
+	LOGD("debug r=%i, g=%i, b=%i, y=%i", r, g, b, y);
+
+	if(simon_says)
+	{
+		simon_says_led(simon_says, r, g, b, y);
+	}
+}
+
+JNIEXPORT void JNICALL Java_com_jeffboody_SimonSays_SimonSays_NativeButton(JNIEnv* env, jobject obj, jint r, jint g, jint b, jint y)
+{
+	assert(env);
+	LOGD("debug r=%i, g=%i, b=%i, y=%i", r, g, b, y);
+
+	if(simon_says)
+	{
+		simon_says_button(simon_says, r, g, b, y);
+	}
+}
+
+JNIEXPORT void JNICALL Java_com_jeffboody_SimonSays_SimonSays_NativeMessage(JNIEnv* env, jobject obj, jstring message)
+{
+	assert(env);
+	const char* m = (*env)->GetStringUTFChars(env, message, 0);
+	LOGD("debug message=%s", m);
+
+	if(simon_says)
+	{
+		simon_says_message(simon_says, m);
+	}
+
+	(*env)->ReleaseStringUTFChars(env, message, m);
 }
