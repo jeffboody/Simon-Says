@@ -1,0 +1,7 @@
+.tags
+App/project/bin/
+App/project/gen/
+App/project/libs/
+App/project/obj/
+App/project/local.properties
+App/project/res/raw/timestamp.raw
