@@ -11,8 +11,32 @@ The Simon Says Soldering kit is available from Sparkfun.
 * <a href="https://www.sparkfun.com/products/10547">Simon Says - Through Hole Soldering Kit</a>
 * <a href="https://www.sparkfun.com/products/10935">Simon Says - Surface Mount Soldering Kit</a>
 
-License
-=======
+The Simon Says (SS) device can control the SS Android app when
+connected over Bluetooth. This SS app does not perform any game
+logic and simply shows the game state as reported by the SS
+device. When the SS device is in attract mode (lights blinking
+CCW) then the SS app can connect and the game restarts.
+
+To modify an existing SS device to support the SS app you simply
+need to flash the new firmware, connect a Bluetooth device and
+launch the SS app. Be sure that the baud rate in the firmware
+(default is 57600) matches the baud rate of the Bluetooth device.
+
+Connect the Bluetooth device to the SS device as follows:
+
+1. Bluetooth VCC to SS 5V (through hole) or SS 3.3V (surface mount)
+2. Bluetooth GND to SS GND
+3. Bluetooth Tx to SS Rx (disconnect when uploading sketches)
+4. Bluetooth Rx to SS Tx
+5. Bluetooth Cts to Bluetooth Rts (if applicable)
+
+The Bluesmirf Bluetooth module is available from Sparkfun.
+
+* <a href="https://www.sparkfun.com/products/10268">Bluesmirf Gold</a>
+* <a href="https://www.sparkfun.com/products/10269">Bluesmirf Silver</a>
+
+Firmware License
+================
 
 	Started: 6-19-2007
 	Spark Fun Electronics
@@ -56,3 +80,26 @@ License
 	The current version of Simon uses the ATmega328. The external osciallator
 	was removed to reduce component count.  This version of simon relies on the
 	internal default 1MHz osciallator. Do not set the external fuses.
+
+App License
+===========
+
+	Copyright (c) 2013 Jeff Boody
+
+	Permission is hereby granted, free of charge, to any person obtaining a
+	copy of this software and associated documentation files (the "Software"),
+	to deal in the Software without restriction, including without limitation
+	the rights to use, copy, modify, merge, publish, distribute, sublicense,
+	and/or sell copies of the Software, and to permit persons to whom the
+	Software is furnished to do so, subject to the following conditions:
+
+	The above copyright notice and this permission notice shall be included
+	in all copies or substantial portions of the Software.
+
+	THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR
+	IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY,
+	FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE
+	AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER
+	LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,
+	OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN
+	THE SOFTWARE.
