@@ -48,7 +48,7 @@ public class SimonSays extends Activity implements Runnable
 	// Bluetooth
 	private boolean      mIsRunning        = false;
 	private BlueSmirfSPP mSPP              = new BlueSmirfSPP();
-	private String       mBluetoothAddress = "00:06:66:05:03:A8";
+	private String       mBluetoothAddress = "none";
 
 	// Parser state
 	private static final int PARSER_BEGIN     = 0;
@@ -67,6 +67,9 @@ public class SimonSays extends Activity implements Runnable
 	public void onCreate(Bundle savedInstanceState)
 	{
 		super.onCreate(savedInstanceState);
+
+		Intent i = getIntent();
+		mBluetoothAddress = i.getStringExtra("ADDRESS");
 
 		A3DResource r = new A3DResource(this, R.raw.timestamp);
 		r.Add(R.raw.whitrabt, "whitrabt.texgz");

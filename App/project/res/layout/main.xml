@@ -1,13 +1,34 @@
 <?xml version="1.0" encoding="utf-8"?>
-<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
-    android:orientation="vertical"
-    android:layout_width="fill_parent"
-    android:layout_height="fill_parent"
-    >
-<TextView  
-    android:layout_width="fill_parent" 
-    android:layout_height="wrap_content" 
-    android:text="Hello World, SimonSays"
-    />
-</LinearLayout>
+<ScrollView xmlns:android="http://schemas.android.com/apk/res/android"
+            android:orientation="vertical"
+            android:layout_width="fill_parent"
+            android:layout_height="fill_parent">
 
+	<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+	              android:orientation="vertical"
+	              android:layout_width="fill_parent"
+	              android:layout_height="wrap_content">
+
+		<TextView android:layout_width="fill_parent"
+		          android:layout_height="wrap_content"
+		          android:text="Configuration"/>
+
+		<Button android:layout_height="wrap_content"
+		        android:layout_width="wrap_content"
+		        android:text="Bluetooth Settings"
+		        android:onClick="onBluetoothSettings"/>
+
+		<TextView android:layout_width="fill_parent"
+		          android:layout_height="wrap_content"
+		          android:text="Paired device(s)"/>
+
+		<Spinner android:id="@+id/ID_PAIRED_DEVICES"
+		         android:layout_width="fill_parent"
+		         android:layout_height="wrap_content"/>
+
+		<Button android:layout_height="wrap_content"
+		        android:layout_width="wrap_content"
+		        android:text="Play Game"
+		        android:onClick="onPlayGame"/>
+	</LinearLayout>
+</ScrollView>
