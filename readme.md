@@ -1,15 +1,23 @@
 About
 =====
 
+This project is a fork of the Sparkfun Simon Says Soldering Kit. It
+contains modifications to the firmware to pass game state over
+Bluetooth serial so that the Simon Says device can be used as a
+controller for an Android app. It is my hope that this app will
+provide a good example for others who wish to combine Android
+and Arduino.
+
 Simon Says is a memory game. Start the game by pressing one of the
 four buttons. When a button lights up, press the button, repeating
 the sequence. The sequence will get longer and longer. The game is
 won after 13 rounds.
 
-The Simon Says Soldering kit is available from Sparkfun.
+The Simon Says Soldering kit is available from Sparkfun (the git
+repository only seems to support the PTH version at this time).
 
-* <a href="https://www.sparkfun.com/products/10547">Simon Says - Through Hole Soldering Kit</a>
-* <a href="https://www.sparkfun.com/products/10935">Simon Says - Surface Mount Soldering Kit</a>
+* <a href="https://www.sparkfun.com/products/10547">Simon Says - Through-Hole Soldering Kit</a>
+* <a href="https://www.sparkfun.com/products/11202">Learn to Solder - Simon Says</a>
 
 The Simon Says (SS) device can control the SS Android app when
 connected over Bluetooth. This SS app does not perform any game
@@ -34,6 +42,73 @@ The Bluesmirf Bluetooth module is available from Sparkfun.
 
 * <a href="https://www.sparkfun.com/products/10268">Bluesmirf Gold</a>
 * <a href="https://www.sparkfun.com/products/10269">Bluesmirf Silver</a>
+
+Simon Says Firmware
+===================
+
+Installing Arduino Dev Kit
+--------------------------
+
+	# install Arduino
+	sudo apt-get install arduino
+
+	# install ino command line toolkit (optional)
+	# https://github.com/amperka/ino
+	sudo apt-get install python-setuptools
+	sudo apt-get install python-configobj
+	sudo apt-get install python-jinja2
+	sudo apt-get install python-serial
+	cd $SRC
+	git clone git://github.com/amperka/ino.git
+	cd ino
+	sudo make install
+
+Build and upload with ino (optional)
+------------------------------------
+
+	cd Firmware/ino
+	ino build -m atmega328
+	ino upload -m atmega328
+
+Simon Says App
+==============
+
+Source Code
+-----------
+
+The SS app is a fork of the Sparkfun Simon Kit. The SS app
+uses several git submodules that need to be initialized before the
+app can be built.
+
+	git clone git@github.com:jeffboody/Simon-Says.git
+	cd Simon-Says
+	git submodule update --init
+
+Building, Installing and Uninstalling
+-------------------------------------
+
+1. Install the Android(TM) SDK and NDK available from http://developer.android.com/
+2. Change to App directory
+
+	cd App
+
+3. Initialize environment variables
+
+	<edit profile>
+	source profile
+
+4. Build project
+
+	./build-native.sh
+	./build-java.sh
+
+5. Install apk
+
+	./install.sh
+
+6. Uninstall apk
+
+	./uninstall.sh
 
 Firmware License
 ================
