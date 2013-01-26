@@ -1,12 +1,16 @@
 [submodule "App/project/jni/a3d"]
 	path = App/project/jni/a3d
-	url = git@github.com:jeffboody/a3d-native.git
+	# url = git@github.com:jeffboody/a3d-native.git # read-write
+	url = git://github.com/jeffboody/a3d-native.git # read-only
 [submodule "App/project/src/com/jeffboody/a3d"]
 	path = App/project/src/com/jeffboody/a3d
-	url = git@github.com:jeffboody/a3d-java.git
+	# url = git@github.com:jeffboody/a3d-java.git # read-write
+	url = git://github.com/jeffboody/a3d-java.git # read-only
 [submodule "App/fonts"]
 	path = App/fonts
-	url = git@github.com:jeffboody/a3d-fonts.git
+	# url = git@github.com:jeffboody/a3d-fonts.git # read-write
+	url = git://github.com/jeffboody/a3d-fonts.git # read-only
 [submodule "App/project/src/com/jeffboody/BlueSmirf"]
 	path = App/project/src/com/jeffboody/BlueSmirf
-	url = git@github.com:jeffboody/bluesmirf.git
+	# url = git@github.com:jeffboody/bluesmirf.git # read-write
+	url = git://github.com/jeffboody/bluesmirf.git # read-only
