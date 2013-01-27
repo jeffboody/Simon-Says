@@ -70,6 +70,11 @@ ISR (SIG_OVERFLOW2)
   TCNT2 = 131; 		//256 - 125 = 131
 }
 
+// function declarations
+uint8_t wait_for_button(void);
+void set_leds(uint8_t leds);
+void play_loser(void);
+
 // Report game state
 // Serial is used by default but other modes could also
 // be added easily. For instance an exteral display can
@@ -81,6 +86,13 @@ ISR (SIG_OVERFLOW2)
 // assumed to be off).
 // BUTTON messages should start with '#' and similarly
 // followed by the RGBY characters that are pressed.
+//
+// Since the Simon kit doesn't require the player to
+// place the buttons in a specific order it is
+// impossible to know how they are configured without
+// player input. This is accomplished by sending "@R",
+// "@G", "@B" and "@Y" followed by the BUTTON message.
+// The end of setup is described by "@0".
 #define SIMON_SAYS_SERIAL
 #ifdef SIMON_SAYS_SERIAL
 
@@ -112,8 +124,71 @@ void serial_print(const char* msg)
   }
 }
 
+void serial_setup()
+{
+  uint8_t r, g, b, y;
+
+  if(serial) {
+
+    while(1) {
+      r = 0;
+      g = 0;
+      b = 0;
+      y = 0;
+
+      // turn on leds so player can see them
+      set_leds(LED_A|LED_B|LED_C|LED_D);
+
+      Serial.println("@R");
+      Serial.println("Press Red");
+      while(r == 0) {
+        r |= wait_for_button();
+      }
+
+      Serial.println("@G");
+      delay_ms(100);
+      Serial.println("Press Green");
+      while(g == 0) {
+        g |= wait_for_button();
+      }
+
+      Serial.println("@B");
+      delay_ms(100);
+      Serial.println("Press Blue");
+      while(b == 0) {
+        b |= wait_for_button();
+      }
+
+      Serial.println("@Y");
+      delay_ms(100);
+      Serial.println("Press Yellow");
+      while(y == 0) {
+        y |= wait_for_button();
+      }
+
+      if((r & g) || (r & b) || (r & y) ||
+         (g & b) || (g & y) || (b & y)) {
+        // player selected a duplicate value or
+        // multiple buttons at a time
+        Serial.println("@R0");   // reset colors
+        delay_ms(100);
+        play_loser();
+        continue;
+      }
+
+      // player selected a unique value for all buttons
+      break;
+    }
+
+    Serial.println("@0");
+    delay_ms(100);
+    Serial.println("Welcome to Simon Says");
+  }
+}
+
 #define SIMON_SAYS_BEGIN(m)  Serial.begin(m)
 #define SIMON_SAYS_CONNECT() serial_connect()
+#define SIMON_SAYS_SETUP()   serial_setup()
 #define SIMON_SAYS_LED(m)    serial_print(m)
 #define SIMON_SAYS_BUTTON(m) serial_print(m)
 #define SIMON_SAYS(m)        serial_print(m)
@@ -124,6 +199,7 @@ uint8_t serial_connect(void)
 }
 #define SIMON_SAYS_BEGIN(m)
 #define SIMON_SAYS_CONNECT() serial_connect()
+#define SIMON_SAYS_SETUP()
 #define SIMON_SAYS_LED(m)
 #define SIMON_SAYS_BUTTON(m)
 #define SIMON_SAYS(m)
@@ -602,6 +678,7 @@ void loop()
     }
   }
 
+  SIMON_SAYS_SETUP();
 
   play_winner();
 

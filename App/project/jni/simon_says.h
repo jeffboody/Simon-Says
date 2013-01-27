@@ -26,21 +26,30 @@
 
 #include "a3d/a3d_texfont.h"
 #include "a3d/a3d_texstring.h"
+#include "a3d/math/a3d_vec3f.h"
 
 typedef struct
 {
 	GLsizei w;
 	GLsizei h;
 
+	// led is lit
 	float led_a;
 	float led_b;
 	float led_c;
 	float led_d;
 
+	// button is pressed
 	int button_a;
 	int button_b;
 	int button_c;
 	int button_d;
+
+	// color of led
+	a3d_vec3f_t color_a;
+	a3d_vec3f_t color_b;
+	a3d_vec3f_t color_c;
+	a3d_vec3f_t color_d;
 
 	a3d_texfont_t*   font;
 	a3d_texstring_t* message;
@@ -53,5 +62,10 @@ void          simon_says_draw(simon_says_t* self);
 void          simon_says_led(simon_says_t* self, int a, int b, int c, int d);
 void          simon_says_button(simon_says_t* self, int a, int b, int c, int d);
 void          simon_says_message(simon_says_t* self, const char* message);
+void          simon_says_colora(simon_says_t* self, char c);
+void          simon_says_colorb(simon_says_t* self, char c);
+void          simon_says_colorc(simon_says_t* self, char c);
+void          simon_says_colord(simon_says_t* self, char c);
+void          simon_says_colorreset(simon_says_t* self);
 
 #endif

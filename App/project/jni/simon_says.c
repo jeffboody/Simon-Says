@@ -71,6 +71,32 @@ static void drawbox(float top, float left,
 	glColor4f(1.0f, 1.0f, 1.0f, 1.0f);
 }
 
+void simon_says_colorset(a3d_vec3f_t* v, char c)
+{
+	assert(v);
+	if(c == 'R')
+	{
+		a3d_vec3f_load(v, 1.0f, 0.0f, 0.0f);
+	}
+	else if(c == 'G')
+	{
+		a3d_vec3f_load(v, 0.0f, 1.0f, 0.0f);
+	}
+	else if(c == 'B')
+	{
+		a3d_vec3f_load(v, 0.0f, 0.0f, 1.0f);
+	}
+	else if(c == 'Y')
+	{
+		a3d_vec3f_load(v, 1.0f, 1.0f, 0.0f);
+	}
+	else
+	{
+		// error is magenta
+		a3d_vec3f_load(v, 1.0f, 0.0f, 1.0f);
+	}
+}
+
 /***********************************************************
 * public                                                   *
 ***********************************************************/
@@ -112,6 +138,8 @@ simon_says_t* simon_says_new(const char* font)
 	self->button_b = 0;
 	self->button_c = 0;
 	self->button_d = 0;
+
+	simon_says_colorreset(self);
 
 	glDisable(GL_DEPTH_TEST);
 	glEnable(GL_NORMALIZE);
@@ -184,18 +212,26 @@ void simon_says_draw(simon_says_t* self)
 
 	glClear(GL_COLOR_BUFFER_BIT);
 
-	// draw squares for red, green, blue, yellow
+	// draw buttons/leds
+	a3d_vec3f_t color_a;
+	a3d_vec3f_t color_b;
+	a3d_vec3f_t color_c;
+	a3d_vec3f_t color_d;
+	a3d_vec3f_muls_copy(&self->color_a, self->led_a, &color_a);
+	a3d_vec3f_muls_copy(&self->color_b, self->led_b, &color_b);
+	a3d_vec3f_muls_copy(&self->color_c, self->led_c, &color_c);
+	a3d_vec3f_muls_copy(&self->color_d, self->led_d, &color_d);
 	drawbox(yt, xl, yc, xc,
-            self->led_a, 0.0f, 0.0f,
+            color_a.x, color_a.y, color_a.z,
             1);
 	drawbox(yt, xc, yc, xr,
-            0.0f, self->led_b, 0.0f,
+            color_b.x, color_b.y, color_b.z,
             1);
 	drawbox(yc, xl, yb, xc,
-            0.0f, 0.0f, self->led_c,
+            color_c.x, color_c.y, color_c.z,
             1);
 	drawbox(yc, xc, yb, xr,
-            self->led_d, self->led_d, 0.0f,
+            color_d.x, color_d.y, color_d.z,
             1);
 
 	// draw message
@@ -232,4 +268,42 @@ void simon_says_message(simon_says_t* self, const char* message)
 	LOGD("debug message=%s", message);
 
 	a3d_texstring_printf(self->message, "%s", message);
+}
+
+void simon_says_colora(simon_says_t* self, char c)
+{
+	assert(self);
+	LOGD("debug c=%c", c);
+	simon_says_colorset(&self->color_a, c);
+}
+
+void simon_says_colorb(simon_says_t* self, char c)
+{
+	assert(self);
+	LOGD("debug c=%c", c);
+	simon_says_colorset(&self->color_b, c);
+}
+
+void simon_says_colorc(simon_says_t* self, char c)
+{
+	assert(self);
+	LOGD("debug c=%c", c);
+	simon_says_colorset(&self->color_c, c);
+}
+
+void simon_says_colord(simon_says_t* self, char c)
+{
+	assert(self);
+	LOGD("debug c=%c", c);
+	simon_says_colorset(&self->color_d, c);
+}
+
+void simon_says_colorreset(simon_says_t* self)
+{
+	assert(self);
+	LOGD("debug");
+	a3d_vec3f_load(&self->color_a, 0.60f, 0.60f, 0.60f);
+	a3d_vec3f_load(&self->color_b, 0.75f, 0.75f, 0.75f);
+	a3d_vec3f_load(&self->color_c, 0.45f, 0.45f, 0.45f);
+	a3d_vec3f_load(&self->color_d, 0.90f, 0.90f, 0.90f);
 }

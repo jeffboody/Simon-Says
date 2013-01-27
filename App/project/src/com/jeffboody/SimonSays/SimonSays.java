@@ -55,6 +55,7 @@ public class SimonSays extends Activity implements Runnable
 	private static final int PARSER_LED       = 1;
 	private static final int PARSER_BUTTON    = 2;
 	private static final int PARSER_MESSAGE   = 3;
+	private static final int PARSER_SETUP     = 4;
 	private static final int PARSER_MAX_COUNT = 32;
 	private int mParserState = PARSER_BEGIN;
 
@@ -62,6 +63,11 @@ public class SimonSays extends Activity implements Runnable
 	private native void NativeLed(int a, int b, int c, int d);
 	private native void NativeButton(int a, int b, int c, int d);
 	private native void NativeMessage(String message);
+	private native void NativeColorA(byte color);
+	private native void NativeColorB(byte color);
+	private native void NativeColorC(byte color);
+	private native void NativeColorD(byte color);
+	private native void NativeColorReset();
 
 	@Override
 	public void onCreate(Bundle savedInstanceState)
@@ -128,11 +134,13 @@ public class SimonSays extends Activity implements Runnable
 		int d          = 0;
 		int count      = 0;
 		byte[] message = new byte[PARSER_MAX_COUNT];
+		byte color     = '0';
 
 		Looper.prepare();
 
 		while(mIsRunning)
 		{
+			NativeColorReset();
 			NativeMessage("Connecting");
 			mSPP.connect(mBluetoothAddress);
 			mSPP.writeByte('c');
@@ -187,6 +195,10 @@ public class SimonSays extends Activity implements Runnable
 					{
 						mParserState = PARSER_BUTTON;
 					}
+					else if(ch == '@')
+					{
+						mParserState = PARSER_SETUP;
+					}
 					else
 					{
 						mParserState = PARSER_MESSAGE;
@@ -196,22 +208,55 @@ public class SimonSays extends Activity implements Runnable
 				        (mParserState == PARSER_BUTTON))
 				{
 					// led lit or button pressed
+					// when color is R, G, B, A we are in setup mode
+					// and will reassign the button/led color
 
 					if(ch == 'A')
 					{
 						a = 1;
+						if(color != '0')
+						{
+							NativeColorA(color);
+						}
 					}
 					else if(ch == 'B')
 					{
 						b = 1;
+						if(color != '0')
+						{
+							NativeColorB(color);
+						}
 					}
 					else if(ch == 'C')
 					{
 						c = 1;
+						if(color != '0')
+						{
+							NativeColorC(color);
+						}
 					}
 					else if(ch == 'D')
 					{
 						d = 1;
+						if(color != '0')
+						{
+							NativeColorD(color);
+						}
+					}
+				}
+				else if(mParserState == PARSER_SETUP)
+				{
+					if((ch == 'R') || (ch == 'G') ||
+					   (ch == 'B') || (ch == 'Y') ||
+					   (ch == '0'))
+					{
+						color = ch;
+					}
+
+					// reset all the colors when we receive "@R"
+					if(ch == 'R')
+					{
+						NativeColorReset();
 					}
 				}
 

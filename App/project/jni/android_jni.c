@@ -139,3 +139,58 @@ JNIEXPORT void JNICALL Java_com_jeffboody_SimonSays_SimonSays_NativeMessage(JNIE
 
 	(*env)->ReleaseStringUTFChars(env, message, m);
 }
+
+JNIEXPORT void JNICALL Java_com_jeffboody_SimonSays_SimonSays_NativeColorA(JNIEnv* env, jobject obj, jbyte color)
+{
+	assert(env);
+	LOGD("debug color=%c", (char) color);
+
+	if(simon_says)
+	{
+		simon_says_colora(simon_says, (char) color);
+	}
+}
+
+JNIEXPORT void JNICALL Java_com_jeffboody_SimonSays_SimonSays_NativeColorB(JNIEnv* env, jobject obj, jbyte color)
+{
+	assert(env);
+	LOGD("debug color=%c", (char) color);
+
+	if(simon_says)
+	{
+		simon_says_colorb(simon_says, (char) color);
+	}
+}
+
+JNIEXPORT void JNICALL Java_com_jeffboody_SimonSays_SimonSays_NativeColorC(JNIEnv* env, jobject obj, jbyte color)
+{
+	assert(env);
+	LOGD("debug color=%c", (char) color);
+
+	if(simon_says)
+	{
+		simon_says_colorc(simon_says, (char) color);
+	}
+}
+
+JNIEXPORT void JNICALL Java_com_jeffboody_SimonSays_SimonSays_NativeColorD(JNIEnv* env, jobject obj, jbyte color)
+{
+	assert(env);
+	LOGD("debug color=%c", (char) color);
+
+	if(simon_says)
+	{
+		simon_says_colord(simon_says, (char) color);
+	}
+}
+
+JNIEXPORT void JNICALL Java_com_jeffboody_SimonSays_SimonSays_NativeColorReset(JNIEnv* env)
+{
+	assert(env);
+	LOGD("debug");
+
+	if(simon_says)
+	{
+		simon_says_colorreset(simon_says);
+	}
+}
