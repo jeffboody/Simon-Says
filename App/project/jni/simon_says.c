@@ -103,15 +103,15 @@ simon_says_t* simon_says_new(const char* font)
 	self->w = 0;
 	self->h = 0;
 
-	self->led_r = 1.0f;
+	self->led_a = 1.0f;
 	self->led_b = 1.0f;
-	self->led_g = 1.0f;
-	self->led_y = 1.0f;
+	self->led_c = 1.0f;
+	self->led_d = 1.0f;
 
-	self->button_r = 0;
+	self->button_a = 0;
 	self->button_b = 0;
-	self->button_g = 0;
-	self->button_y = 0;
+	self->button_c = 0;
+	self->button_d = 0;
 
 	glDisable(GL_DEPTH_TEST);
 	glEnable(GL_NORMALIZE);
@@ -184,18 +184,18 @@ void simon_says_draw(simon_says_t* self)
 
 	glClear(GL_COLOR_BUFFER_BIT);
 
-	// draw squares for blue, red, green, yellow
+	// draw squares for red, green, blue, yellow
 	drawbox(yt, xl, yc, xc,
-            0.0f, 0.0f, self->led_b,
+            self->led_a, 0.0f, 0.0f,
             1);
 	drawbox(yt, xc, yc, xr,
-            self->led_r, 0.0f, 0.0f,
+            0.0f, self->led_b, 0.0f,
             1);
 	drawbox(yc, xl, yb, xc,
-            0.0f, self->led_g, 0.0f,
+            0.0f, 0.0f, self->led_c,
             1);
 	drawbox(yc, xc, yb, xr,
-            self->led_y, self->led_y, 0.0f,
+            self->led_d, self->led_d, 0.0f,
             1);
 
 	// draw message
@@ -204,26 +204,26 @@ void simon_says_draw(simon_says_t* self)
 	A3D_GL_GETERROR();
 }
 
-void simon_says_led(simon_says_t* self, int r, int g, int b, int y)
+void simon_says_led(simon_says_t* self, int a, int b, int c, int d)
 {
 	assert(self);
-	LOGD("debug r=%i, g=%i, b=%i, y=%i", r, g, b, y);
+	LOGD("debug a=%i, b=%i, c=%i, d=%i", a, b, c, d);
 
-	self->led_r = r ? 1.0f : 0.5f;
-	self->led_g = g ? 1.0f : 0.5f;
+	self->led_a = a ? 1.0f : 0.5f;
 	self->led_b = b ? 1.0f : 0.5f;
-	self->led_y = y ? 1.0f : 0.5f;
+	self->led_c = c ? 1.0f : 0.5f;
+	self->led_d = d ? 1.0f : 0.5f;
 }
 
-void simon_says_button(simon_says_t* self, int r, int g, int b, int y)
+void simon_says_button(simon_says_t* self, int a, int b, int c, int d)
 {
 	assert(self);
-	LOGD("debug r=%i, g=%i, b=%i, y=%i", r, g, b, y);
+	LOGD("debug a=%i, b=%i, c=%i, d=%i", a, b, c, d);
 
-	self->button_r = r;
-	self->button_g = g;
+	self->button_a = a;
 	self->button_b = b;
-	self->button_y = y;
+	self->button_c = c;
+	self->button_d = d;
 }
 
 void simon_says_message(simon_says_t* self, const char* message)

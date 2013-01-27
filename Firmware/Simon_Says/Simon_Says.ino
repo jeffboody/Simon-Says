@@ -151,43 +151,43 @@ void delay_ms(uint16_t x)
 //Light the given set of LEDs
 void set_leds(uint8_t leds)
 {
-  char buffer[6]; // "*RGBY\0"
+  char buffer[6]; // "*ABCD\0"
   int idx = 0;
   uint8_t leds_lit = 0;
   static uint8_t last_leds_lit = 0;
 
   buffer[idx++] = '*';
-  if ((leds & LED_RED) != 0) {
-    buffer[idx++] = 'R';
-    leds_lit |= LED_RED;
-    sbi(LED_RED_PORT, LED_RED_PIN);
+  if ((leds & LED_A) != 0) {
+    buffer[idx++] = 'A';
+    leds_lit |= LED_A;
+    sbi(LED_A_PORT, LED_A_PIN);
   }
   else {
-    cbi(LED_RED_PORT, LED_RED_PIN);
+    cbi(LED_A_PORT, LED_A_PIN);
   }
-  if ((leds & LED_GREEN) != 0) {
-    buffer[idx++] = 'G';
-    leds_lit |= LED_GREEN;
-    sbi(LED_GREEN_PORT, LED_GREEN_PIN);
-  }
-  else {
-    cbi(LED_GREEN_PORT, LED_GREEN_PIN);
-  }
-  if ((leds & LED_BLUE) != 0) {
+  if ((leds & LED_B) != 0) {
     buffer[idx++] = 'B';
-    leds_lit |= LED_BLUE;
-    sbi(LED_BLUE_PORT, LED_BLUE_PIN);
+    leds_lit |= LED_B;
+    sbi(LED_B_PORT, LED_B_PIN);
   }
   else {
-    cbi(LED_BLUE_PORT, LED_BLUE_PIN);
+    cbi(LED_B_PORT, LED_B_PIN);
   }
-  if ((leds & LED_YELLOW) != 0) {
-    buffer[idx++] = 'Y';
-    leds_lit |= LED_YELLOW;
-    sbi(LED_YELLOW_PORT, LED_YELLOW_PIN);
+  if ((leds & LED_C) != 0) {
+    buffer[idx++] = 'C';
+    leds_lit |= LED_C;
+    sbi(LED_C_PORT, LED_C_PIN);
   }
   else {
-    cbi(LED_YELLOW_PORT, LED_YELLOW_PIN);
+    cbi(LED_C_PORT, LED_C_PIN);
+  }
+  if ((leds & LED_D) != 0) {
+    buffer[idx++] = 'D';
+    leds_lit |= LED_D;
+    sbi(LED_D_PORT, LED_D_PIN);
+  }
+  else {
+    cbi(LED_D_PORT, LED_D_PIN);
   }
 
   if(leds_lit != last_leds_lit)
@@ -243,34 +243,34 @@ void ioinit(void)
   init_gpio();	
 }
 
-// Returns a '1' bit in the position corresponding to LED_RED, etc.
+// Returns a '1' bit in the position corresponding to LED_A, etc.
 uint8_t check_button(void)
 {
-  char buffer[6]; // "#RGBY\0"
+  char buffer[6]; // "#ABCD\0"
   int idx = 0;
   uint8_t button_pressed = 0;
   static uint8_t last_button_pressed = 0;
 
   buffer[idx++] = '#';
-  if ((BUTTON_RED_PORT & (1 << BUTTON_RED_PIN)) == 0)
+  if ((BUTTON_A_PORT & (1 << BUTTON_A_PIN)) == 0)
   {
-    buffer[idx++] = 'R';
-    button_pressed |= LED_RED; 
+    buffer[idx++] = 'A';
+    button_pressed |= LED_A; 
   }
-  if ((BUTTON_GREEN_PORT & (1 << BUTTON_GREEN_PIN)) == 0)
-  {
-    buffer[idx++] = 'G';
-    button_pressed |= LED_GREEN; 
-  }
-  if ((BUTTON_BLUE_PORT & (1 << BUTTON_BLUE_PIN)) == 0)
+  if ((BUTTON_B_PORT & (1 << BUTTON_B_PIN)) == 0)
   {
     buffer[idx++] = 'B';
-    button_pressed |= LED_BLUE; 
+    button_pressed |= LED_B; 
   }
-  if ((BUTTON_YELLOW_PORT & (1 << BUTTON_YELLOW_PIN)) == 0)
+  if ((BUTTON_C_PORT & (1 << BUTTON_C_PIN)) == 0)
   {
-    buffer[idx++] = 'Y';
-    button_pressed |= LED_YELLOW; 
+    buffer[idx++] = 'C';
+    button_pressed |= LED_C; 
+  }
+  if ((BUTTON_D_PORT & (1 << BUTTON_D_PIN)) == 0)
+  {
+    buffer[idx++] = 'D';
+    button_pressed |= LED_D; 
   }
 
   if(button_pressed != last_button_pressed)
@@ -286,16 +286,16 @@ uint8_t check_button(void)
 // Play the loser sound/lights
 void play_loser(void)
 {
-  set_leds(LED_RED|LED_GREEN);
+  set_leds(LED_A|LED_B);
   buzz_sound(255, 1500);
 
-  set_leds(LED_BLUE|LED_YELLOW);
+  set_leds(LED_C|LED_D);
   buzz_sound(255, 1500);
 
-  set_leds(LED_RED|LED_GREEN);
+  set_leds(LED_A|LED_B);
   buzz_sound(255, 1500);
 
-  set_leds(LED_BLUE|LED_YELLOW);
+  set_leds(LED_C|LED_D);
   buzz_sound(255, 1500);
 }
 
@@ -323,13 +323,13 @@ void winner_sound(void)
 // Play the winner sound and lights
 void play_winner(void)
 {
-  set_leds(LED_GREEN|LED_BLUE);
+  set_leds(LED_B|LED_C);
   winner_sound();
-  set_leds(LED_RED|LED_YELLOW);
+  set_leds(LED_A|LED_D);
   winner_sound();
-  set_leds(LED_GREEN|LED_BLUE);
+  set_leds(LED_B|LED_C);
   winner_sound();
-  set_leds(LED_RED|LED_YELLOW);
+  set_leds(LED_A|LED_D);
   winner_sound();
 }
 
@@ -390,28 +390,28 @@ void buzz_sound(uint16_t buzz_length_ms, uint16_t buzz_delay_us)
 
 /*
  Light an LED and play tone
- red, upper left:     440Hz - 2.272ms - 1.136ms pulse
- green, upper right:  880Hz - 1.136ms - 0.568ms pulse
- blue, lower left:    587.33Hz - 1.702ms - 0.851ms pulse
- yellow, lower right: 784Hz - 1.276ms - 0.638ms pulse
+ LED_A, red, upper left:     440Hz - 2.272ms - 1.136ms pulse
+ LED_B, green, upper right:  880Hz - 1.136ms - 0.568ms pulse
+ LED_C, blue, lower left:    587.33Hz - 1.702ms - 0.851ms pulse
+ LED_D, yellow, lower right: 784Hz - 1.276ms - 0.638ms pulse
  */
 void toner(uint8_t which, uint16_t buzz_length_ms)
 {
   set_leds(which);
   switch (which) {
-  case LED_RED:
+  case LED_A:
     buzz_sound(buzz_length_ms, 1136); 
     break;
 
-  case LED_GREEN:
+  case LED_B:
     buzz_sound(buzz_length_ms, 568); 
     break;
 
-  case LED_BLUE:
+  case LED_C:
     buzz_sound(buzz_length_ms, 851); 
     break;
 
-  case LED_YELLOW:
+  case LED_D:
     buzz_sound(buzz_length_ms, 638); 
     break;
   }
@@ -430,22 +430,22 @@ uint8_t attract_mode(void)
     if (SIMON_SAYS_CONNECT())
       return 1;
 
-    set_leds(LED_RED);
+    set_leds(LED_A);
     delay_ms(100);
     if (check_button() != 0x00)
       return SIMON_SAYS_CONNECT();
 
-    set_leds(LED_BLUE);
+    set_leds(LED_C);
     delay_ms(100);
     if (check_button() != 0x00) 
       return SIMON_SAYS_CONNECT();
 
-    set_leds(LED_GREEN);
+    set_leds(LED_B);
     delay_ms(100);
     if (check_button() != 0x00) 
       return SIMON_SAYS_CONNECT();
 
-    set_leds(LED_YELLOW);
+    set_leds(LED_D);
     delay_ms(100);
     if (check_button() != 0x00) 
       return SIMON_SAYS_CONNECT();
@@ -466,7 +466,7 @@ uint8_t attract_mode(void)
 }
 
 // Wait for a button to be pressed. 
-// Returns one of led colors (LED_RED, etc.) if successful, 0 if timed out
+// Returns one of led colors (LED_A, etc.) if successful, 0 if timed out
 uint8_t wait_for_button(void)
 {
   uint16_t time_limit = TIME_LIMIT;
@@ -485,10 +485,10 @@ uint8_t wait_for_button(void)
       released = 1;
     if (button == old_button && released == 1) {
       // Make sure just one button is pressed
-      if (button == LED_RED || 
-        button == LED_BLUE ||
-        button == LED_GREEN || 
-        button == LED_YELLOW) {
+      if (button == LED_A || 
+        button == LED_C ||
+        button == LED_B || 
+        button == LED_D) {
         return button;
       }
     }
@@ -580,7 +580,7 @@ void loop()
   SIMON_SAYS("Welcome to Simon Says");
 
   // Check to see if LOWER LEFT BUTTON is pressed
-  if (check_button() == LED_YELLOW){
+  if (check_button() == LED_D){
     while(1){
       buzz(5);
       delay_ms(750);      
@@ -591,7 +591,7 @@ void loop()
   }
 
   // Check to see if LOWER RIGHT BUTTON is pressed
-  if (check_button() == LED_GREEN){
+  if (check_button() == LED_B){
     while(1){
       buzz(5);
       delay_ms(750);      
@@ -615,7 +615,7 @@ void loop()
 
     // Indicate the start of game play
     SIMON_SAYS("Prepare yourself");
-    set_leds(LED_RED|LED_GREEN|LED_BLUE|LED_YELLOW);
+    set_leds(LED_A|LED_B|LED_C|LED_D);
     delay_ms(1000);
     set_leds(0);
     delay_ms(250);

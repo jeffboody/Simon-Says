@@ -15,30 +15,30 @@
 
 #define CHIP_ATMEGA168
 
-#define LED_RED		(1 << 0)
-#define LED_GREEN	(1 << 1)
-#define LED_BLUE	(1 << 2)
-#define LED_YELLOW	(1 << 3)
+#define LED_A	(1 << 0)
+#define LED_B	(1 << 1)
+#define LED_C	(1 << 2)
+#define LED_D	(1 << 3)
 
 /* LED pin definitions */
-#define LED_RED_PIN		2
-#define LED_RED_PORT		PORTB
-#define LED_GREEN_PIN		3
-#define LED_GREEN_PORT		PORTD
-#define LED_BLUE_PIN		5
-#define LED_BLUE_PORT		PORTB
-#define LED_YELLOW_PIN		5
-#define LED_YELLOW_PORT		PORTD
+#define LED_A_PIN		2
+#define LED_A_PORT		PORTB
+#define LED_B_PIN		3
+#define LED_B_PORT		PORTD
+#define LED_C_PIN		5
+#define LED_C_PORT		PORTB
+#define LED_D_PIN		5
+#define LED_D_PORT		PORTD
 
 /* Button pin definitions */
-#define BUTTON_RED_PIN		1
-#define	BUTTON_RED_PORT		PINB
-#define BUTTON_GREEN_PIN	2
-#define	BUTTON_GREEN_PORT	PIND
-#define BUTTON_BLUE_PIN		4
-#define	BUTTON_BLUE_PORT	PINB
-#define BUTTON_YELLOW_PIN	6
-#define	BUTTON_YELLOW_PORT	PIND
+#define BUTTON_A_PIN	1
+#define	BUTTON_A_PORT	PINB
+#define BUTTON_B_PIN	2
+#define	BUTTON_B_PORT	PIND
+#define BUTTON_C_PIN	4
+#define	BUTTON_C_PORT	PINB
+#define BUTTON_D_PIN	6
+#define	BUTTON_D_PORT	PIND
 
 /* Buzzer pin definitions */
 #define BUZZER1		4
@@ -52,30 +52,30 @@
 
 #define CHIP_ATMEGA168
 
-#define LED_RED		(1 << 0)
-#define LED_GREEN	(1 << 1)
-#define LED_BLUE	(1 << 2)
-#define LED_YELLOW	(1 << 3)
+#define LED_A	(1 << 0)
+#define LED_B	(1 << 1)
+#define LED_C	(1 << 2)
+#define LED_D	(1 << 3)
 
 /* LED pin definitions */
-#define LED_RED_PIN		3
-#define LED_RED_PORT		PORTC
-#define LED_GREEN_PIN		2
-#define LED_GREEN_PORT		PORTD
-#define LED_BLUE_PIN		0
-#define LED_BLUE_PORT		PORTC
-#define LED_YELLOW_PIN		5
-#define LED_YELLOW_PORT		PORTD
+#define LED_A_PIN		3
+#define LED_A_PORT		PORTC
+#define LED_B_PIN		2
+#define LED_B_PORT		PORTD
+#define LED_C_PIN		0
+#define LED_C_PORT		PORTC
+#define LED_D_PIN		5
+#define LED_D_PORT		PORTD
 
 /* Button pin definitions */
-#define BUTTON_RED_PIN		2
-#define	BUTTON_RED_PORT		PINC
-#define BUTTON_GREEN_PIN	5
-#define	BUTTON_GREEN_PORT	PINC
-#define BUTTON_BLUE_PIN		1
-#define	BUTTON_BLUE_PORT	PINC
-#define BUTTON_YELLOW_PIN	6
-#define	BUTTON_YELLOW_PORT	PIND
+#define BUTTON_A_PIN	2
+#define	BUTTON_A_PORT	PINC
+#define BUTTON_B_PIN	5
+#define	BUTTON_B_PORT	PINC
+#define BUTTON_C_PIN	1
+#define	BUTTON_C_PORT	PINC
+#define BUTTON_D_PIN	6
+#define	BUTTON_D_PORT	PIND
 
 /* Buzzer pin definitions */
 #define BUZZER1		3
@@ -87,32 +87,32 @@
 
 #ifdef BOARD_REV_4_9_2009
 
-#define LED_RED		(1 << 0)
-#define LED_GREEN	(1 << 1)
-#define LED_BLUE	(1 << 2)
-#define LED_YELLOW	(1 << 3)
+#define LED_A		(1 << 0)
+#define LED_B	(1 << 1)
+#define LED_C	(1 << 2)
+#define LED_D	(1 << 3)
 
 #define CHIP_ATMEGA168
 
 /* LED pin definitions */
-#define LED_BLUE_PIN		5
-#define LED_BLUE_PORT		PORTB
-#define LED_YELLOW_PIN		5
-#define LED_YELLOW_PORT		PORTD
-#define LED_RED_PIN		2
-#define LED_RED_PORT		PORTB
-#define LED_GREEN_PIN		2
-#define LED_GREEN_PORT		PORTD
+#define LED_C_PIN		5
+#define LED_C_PORT		PORTB
+#define LED_D_PIN		5
+#define LED_D_PORT		PORTD
+#define LED_A_PIN		2
+#define LED_A_PORT		PORTB
+#define LED_B_PIN		2
+#define LED_B_PORT		PORTD
 
 /* Button pin definitions */
-#define BUTTON_RED_PIN		0
-#define	BUTTON_RED_PORT		PINB
-#define BUTTON_GREEN_PIN	1
-#define	BUTTON_GREEN_PORT	PINB
-#define BUTTON_BLUE_PIN		7
-#define	BUTTON_BLUE_PORT	PIND
-#define BUTTON_YELLOW_PIN	6
-#define	BUTTON_YELLOW_PORT	PIND
+#define BUTTON_A_PIN	0
+#define	BUTTON_A_PORT	PINB
+#define BUTTON_B_PIN	1
+#define	BUTTON_B_PORT	PINB
+#define BUTTON_C_PIN	7
+#define	BUTTON_C_PORT	PIND
+#define BUTTON_D_PIN	6
+#define	BUTTON_D_PORT	PIND
 
 /* Buzzer pin definitions */
 #define BUZZER1		3

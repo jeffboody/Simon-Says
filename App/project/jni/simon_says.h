@@ -32,15 +32,15 @@ typedef struct
 	GLsizei w;
 	GLsizei h;
 
-	float led_r;
+	float led_a;
 	float led_b;
-	float led_g;
-	float led_y;
+	float led_c;
+	float led_d;
 
-	int button_r;
+	int button_a;
 	int button_b;
-	int button_g;
-	int button_y;
+	int button_c;
+	int button_d;
 
 	a3d_texfont_t*   font;
 	a3d_texstring_t* message;
@@ -50,8 +50,8 @@ simon_says_t* simon_says_new(const char* font);
 void          simon_says_delete(simon_says_t** _self);
 void          simon_says_resize(simon_says_t* self, int w, int h);
 void          simon_says_draw(simon_says_t* self);
-void          simon_says_led(simon_says_t* self, int r, int g, int b, int y);
-void          simon_says_button(simon_says_t* self, int r, int g, int b, int y);
+void          simon_says_led(simon_says_t* self, int a, int b, int c, int d);
+void          simon_says_button(simon_says_t* self, int a, int b, int c, int d);
 void          simon_says_message(simon_says_t* self, const char* message);
 
 #endif

@@ -104,25 +104,25 @@ JNIEXPORT int JNICALL Java_com_jeffboody_a3d_A3DNativeRenderer_NativeClientVersi
 	return 1;
 }
 
-JNIEXPORT void JNICALL Java_com_jeffboody_SimonSays_SimonSays_NativeLed(JNIEnv* env, jobject obj, jint r, jint g, jint b, jint y)
+JNIEXPORT void JNICALL Java_com_jeffboody_SimonSays_SimonSays_NativeLed(JNIEnv* env, jobject obj, jint a, jint b, jint c, jint d)
 {
 	assert(env);
-	LOGD("debug r=%i, g=%i, b=%i, y=%i", r, g, b, y);
+	LOGD("debug a=%i, b=%i, c=%i, d=%i", a, b, c, d);
 
 	if(simon_says)
 	{
-		simon_says_led(simon_says, r, g, b, y);
+		simon_says_led(simon_says, a, b, c, d);
 	}
 }
 
-JNIEXPORT void JNICALL Java_com_jeffboody_SimonSays_SimonSays_NativeButton(JNIEnv* env, jobject obj, jint r, jint g, jint b, jint y)
+JNIEXPORT void JNICALL Java_com_jeffboody_SimonSays_SimonSays_NativeButton(JNIEnv* env, jobject obj, jint a, jint b, jint c, jint d)
 {
 	assert(env);
-	LOGD("debug r=%i, g=%i, b=%i, y=%i", r, g, b, y);
+	LOGD("debug a=%i, b=%i, c=%i, d=%i", a, b, c, d);
 
 	if(simon_says)
 	{
-		simon_says_button(simon_says, r, g, b, y);
+		simon_says_button(simon_says, a, b, c, d);
 	}
 }
 

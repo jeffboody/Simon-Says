@@ -59,8 +59,8 @@ public class SimonSays extends Activity implements Runnable
 	private int mParserState = PARSER_BEGIN;
 
 	// Native interface
-	private native void NativeLed(int r, int g, int b, int y);
-	private native void NativeButton(int r, int g, int b, int y);
+	private native void NativeLed(int a, int b, int c, int d);
+	private native void NativeButton(int a, int b, int c, int d);
 	private native void NativeMessage(String message);
 
 	@Override
@@ -122,10 +122,10 @@ public class SimonSays extends Activity implements Runnable
 
 	public void run()
 	{
-		int r          = 0;
+		int a          = 0;
 		int b          = 0;
-		int g          = 0;
-		int y          = 0;
+		int c          = 0;
+		int d          = 0;
 		int count      = 0;
 		byte[] message = new byte[PARSER_MAX_COUNT];
 
@@ -144,24 +144,24 @@ public class SimonSays extends Activity implements Runnable
 					break;
 				}
 
-				byte c = (byte) mSPP.readByte();
+				byte ch = (byte) mSPP.readByte();
 
-				if(c == '\r')
+				if(ch == '\r')
 				{
 					// ignore '\r'
 					continue;
 				}
-				else if(c == '\n')
+				else if(ch == '\n')
 				{
 					// end of command / message
 
 					if(mParserState == PARSER_LED)
 					{
-						NativeLed(r, g, b, y);
+						NativeLed(a, b, c, d);
 					}
 					else if(mParserState == PARSER_BUTTON)
 					{
-						NativeButton(r, g, b, y);
+						NativeButton(a, b, c, d);
 					}
 					else if(mParserState == PARSER_MESSAGE)
 					{
@@ -172,18 +172,18 @@ public class SimonSays extends Activity implements Runnable
 				else if(mParserState == PARSER_BEGIN)
 				{
 					// initialize state
-					r     = 0;
-					g     = 0;
+					a     = 0;
 					b     = 0;
-					y     = 0;
+					c     = 0;
+					d     = 0;
 					count = 0;
 
 					// check command type
-					if(c == '*')
+					if(ch == '*')
 					{
 						mParserState = PARSER_LED;
 					}
-					else if(c == '#')
+					else if(ch == '#')
 					{
 						mParserState = PARSER_BUTTON;
 					}
@@ -197,21 +197,21 @@ public class SimonSays extends Activity implements Runnable
 				{
 					// led lit or button pressed
 
-					if(c == 'R')
+					if(ch == 'A')
 					{
-						r = 1;
+						a = 1;
 					}
-					else if(c == 'G')
-					{
-						g = 1;
-					}
-					else if(c == 'B')
+					else if(ch == 'B')
 					{
 						b = 1;
 					}
-					else if(c == 'Y')
+					else if(ch == 'C')
 					{
-						y = 1;
+						c = 1;
+					}
+					else if(ch == 'D')
+					{
+						d = 1;
 					}
 				}
 
@@ -220,7 +220,7 @@ public class SimonSays extends Activity implements Runnable
 				if((mParserState == PARSER_MESSAGE) &&
 				   (count < PARSER_MAX_COUNT))
 				{
-					message[count++] = c;
+					message[count++] = ch;
 				}
 			}
 			if(mIsRunning)
