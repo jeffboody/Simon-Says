@@ -27,8 +27,8 @@ CCW) then the SS app can connect and the game restarts.
 
 To modify an existing SS device to support the SS app you simply
 need to flash the new firmware, connect a Bluetooth device and
-launch the SS app. Be sure that the baud rate in the firmware
-(default is 57600) matches the baud rate of the Bluetooth device.
+launch the SS app. Be sure that the Bluetooth device baud rate
+matches the baud rate in the firmware (default is 57600).
 
 Connect the Bluetooth device to the SS device as follows:
 
@@ -66,9 +66,10 @@ Installing Arduino Dev Kit
 Build and upload with ino (optional)
 ------------------------------------
 
+	# lilypad328 is compatible with the Simon PTH kit
 	cd Firmware/ino
-	ino build -m atmega328
-	ino upload -m atmega328
+	ino build -m lilypad328
+	ino upload -m lilypad328
 
 Simon Says App
 ==============
@@ -87,27 +88,23 @@ app can be built.
 Building, Installing and Uninstalling
 -------------------------------------
 
-1. Install the Android(TM) SDK and NDK available from http://developer.android.com/
-2. Change to App directory
+Install the Android(TM) SDK and NDK available from http://developer.android.com/
 
+	# change to App directory
 	cd App
 
-3. Initialize environment variables
-
+	# initialize environment variables
 	<edit profile>
 	source profile
 
-4. Build project
-
+	# build project
 	./build-native.sh
 	./build-java.sh
 
-5. Install apk
-
+	# install apk
 	./install.sh
 
-6. Uninstall apk
-
+	# uninstall apk
 	./uninstall.sh
 
 Firmware License
